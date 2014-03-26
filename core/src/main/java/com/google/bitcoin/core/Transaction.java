@@ -854,13 +854,16 @@ public class Transaction extends ChildMessage implements Serializable {
             // The anyoneCanPay feature isn't used at the moment.
             boolean anyoneCanPay = false;
             byte[] connectedPubKeyScript = input.getOutpoint().getConnectedPubKeyScript();
-            if (key.hasPrivKey() || key.isEncrypted()) {
+            try {
                 signatures[i] = calculateSignature(i, key, aesKey, connectedPubKeyScript, hashType, anyoneCanPay);
-            } else {
+            } catch (ECKey.KeyIsEncryptedException e) {
+                throw e;
+            } catch (ECKey.MissingPrivateKeyException e) {
                 // Create a dummy signature to ensure the transaction is of the correct size when we try to ensure
                 // the right fee-per-kb is attached. If the wallet doesn't have the privkey, the user is assumed to
                 // be doing something special and that they will replace the dummy signature with a real one later.
                 signatures[i] = TransactionSignature.dummy();
+                log.info("Used dummy signature for input {} due to failure during signing (most likely missing privkey)", i);
             }
         }
 
@@ -893,7 +896,7 @@ public class Transaction extends ChildMessage implements Serializable {
     /**
      * Calculates a signature that is valid for being inserted into the input at the given position. This is simply
      * a wrapper around calling {@link Transaction#hashForSignature(int, byte[], com.google.bitcoin.core.Transaction.SigHash, boolean)}
-     * followed by {@link ECKey#sign(Sha256Hash, org.spongycastle.crypto.params.KeyParameter)} and then returning
+     * followed by {@link ECKey#sign(Sha256Hash, org.bouncycastle.crypto.params.KeyParameter)} and then returning
      * a new {@link TransactionSignature}.
      *
      * @param inputIndex Which input to calculate the signature for, as an index.

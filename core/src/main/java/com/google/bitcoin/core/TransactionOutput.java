@@ -336,7 +336,7 @@ public class TransactionOutput extends ChildMessage implements Serializable {
 
     /** Returns a copy of the output detached from its containing transaction, if need be. */
     public TransactionOutput duplicateDetached() {
-        return new TransactionOutput(params, null, value, org.spongycastle.util.Arrays.clone(scriptBytes));
+        return new TransactionOutput(params, null, value, org.bouncycastle.util.Arrays.clone(scriptBytes));
     }
 
     @Override
