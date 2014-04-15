@@ -196,6 +196,12 @@
                             </excludes>
                         </filter>
                     </filters>
+                    <relocations>
+                        <relocation>
+                            <pattern>org.bouncycastle</pattern>
+                            <shadedPattern>shadow.org.bouncycastle</shadedPattern>
+                        </relocation>
+                    </relocations>
                 </configuration>
                 <executions>
                     <execution>
@@ -240,11 +246,6 @@
             <artifactId>h2</artifactId>
             <version>1.3.167</version>
             <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>com.madgag.spongycastle</groupId>
-            <artifactId>core</artifactId>
-            <version>1.50.0.0</version>
         </dependency>
         <dependency>
             <groupId>com.google.protobuf</groupId>
